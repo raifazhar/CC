@@ -9,27 +9,28 @@
 
 using namespace llvm;
 
-int main() {
     LLVMContext Context;
     Module *TheModule = new Module("my_module", Context);
     IRBuilder<> Builder(Context);
 
-    // Create format string for printf
-    // Create format string for printf
-GlobalVariable *FormatStr = new GlobalVariable(
+    GlobalVariable *FormatStr = new GlobalVariable(
     *TheModule,
     ArrayType::get(Type::getInt8Ty(Context), 3),  // The array type for the format string
     true,  // isConstant
     GlobalValue::PrivateLinkage,  // Linkage type
     ConstantDataArray::getString(Context, "%f\00", true),  // The format string constant
     "format_str"  // Name of the global variable
-);
+    );
 
     // Define types for function args
     Type *Int32Ty = Builder.getInt32Ty();
     Type *FloatTy = Builder.getFloatTy();
     Type *DoubleTy = Builder.getDoubleTy();
     Type *Int8PtrTy = Builder.getInt8Ty()->getPointerTo();
+
+int main() {
+
+
 
     //******************************************************************************/
     // Define function: float sum(int count, ...)
@@ -88,8 +89,15 @@ GlobalVariable *FormatStr = new GlobalVariable(
     BasicBlock *MulBB = BasicBlock::Create(Context, "Mul", arthimaticFunc);
     BasicBlock *DivBB = BasicBlock::Create(Context, "Div", arthimaticFunc);
 
+    BasicBlock *ResultOneBB = BasicBlock::Create(Context, "ResultOne", arthimaticFunc);
+    BasicBlock *SkipResultOneBB = BasicBlock::Create(Context, "SkipResultOne", arthimaticFunc);
+
+    BasicBlock *DivIntialize = BasicBlock::Create(Context, "DivIntialize", arthimaticFunc);
+    BasicBlock *SkipDivIntialize = BasicBlock::Create(Context, "SkipDivIntialize", arthimaticFunc);
 
     BasicBlock *EndConditonBB = BasicBlock::Create(Context, "end", arthimaticFunc);
+
+    //******************************************************************************/
 
     Builder.CreateBr(LoopBB);
     Builder.SetInsertPoint(LoopBB);
@@ -127,11 +135,32 @@ GlobalVariable *FormatStr = new GlobalVariable(
     Builder.CreateBr(EndConditonBB);
 
     Builder.SetInsertPoint(MulBB);
-    Value *NewResultMul = Builder.CreateFMul(CurrentResult, NextArg, "new_result");
+
+    // Compare if CurrentResult == 0.0 (use FCmpOEQ for floating-point comparison)
+    Value *CondMul = Builder.CreateFCmpOEQ(CurrentResult, ConstantFP::get(FloatTy, 0.0), "cond_mul");
+    Builder.CreateCondBr(CondMul, ResultOneBB, SkipResultOneBB);
+
+    // If result is zero, set it to 1.0
+    Builder.SetInsertPoint(ResultOneBB);
+    Builder.CreateStore(ConstantFP::get(FloatTy, 1.0), result_ptr);  // Corrected to 1.0 instead of 0.0
+    Builder.CreateBr(SkipResultOneBB);
+
+    Builder.SetInsertPoint(SkipResultOneBB);
+    Value *UpdatedCurrentResult = Builder.CreateLoad(FloatTy, result_ptr, "updated_current_result");  // Reload after correction
+    Value *NewResultMul = Builder.CreateFMul(UpdatedCurrentResult, NextArg, "new_result");
     Builder.CreateStore(NewResultMul, result_ptr); 
     Builder.CreateBr(EndConditonBB);
 
     Builder.SetInsertPoint(DivBB);
+    Value *CondDiv = Builder.CreateFCmpOEQ(CurrentResult, ConstantFP::get(FloatTy, 0.0), "cond_div");
+    Builder.CreateCondBr(CondDiv, DivIntialize, SkipDivIntialize);
+
+    Builder.SetInsertPoint(DivIntialize);
+    Builder.CreateStore(NextArg, result_ptr);  // Corrected to 1.0 instead of 0.0
+    Builder.CreateBr(EndConditonBB);
+    
+    Builder.SetInsertPoint(SkipDivIntialize);
+
     Value *NewResultDiv = Builder.CreateFDiv(CurrentResult, NextArg, "new_result");
     Builder.CreateStore(NewResultDiv, result_ptr); 
     Builder.CreateBr(EndConditonBB);

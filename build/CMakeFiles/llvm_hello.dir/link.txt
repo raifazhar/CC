@@ -1,0 +1,3 @@
+C:\msys64\mingw64\bin\cmake.exe -E rm -f CMakeFiles\llvm_hello.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\llvm_hello.dir/objects.a @CMakeFiles\llvm_hello.dir\objects1.rsp
+C:\msys64\mingw64\bin\c++.exe -g -Wl,--whole-archive CMakeFiles\llvm_hello.dir/objects.a -Wl,--no-whole-archive -o llvm_hello.exe -Wl,--out-implib,libllvm_hello.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\llvm_hello.dir\linkLibs.rsp

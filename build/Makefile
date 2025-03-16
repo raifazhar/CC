@@ -206,6 +206,19 @@ llvm_arthimatic/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_arthimatic.dir\build.make CMakeFiles/llvm_arthimatic.dir/build
 .PHONY : llvm_arthimatic/fast
 
+#=============================================================================
+# Target rules for targets named llvm_hello
+
+# Build rule for target.
+llvm_hello: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 llvm_hello
+.PHONY : llvm_hello
+
+# fast build rule for target.
+llvm_hello/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/build
+.PHONY : llvm_hello/fast
+
 llvm_arthimatic.obj: llvm_arthimatic.cpp.obj
 .PHONY : llvm_arthimatic.obj
 
@@ -230,6 +243,30 @@ llvm_arthimatic.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_arthimatic.dir\build.make CMakeFiles/llvm_arthimatic.dir/llvm_arthimatic.cpp.s
 .PHONY : llvm_arthimatic.cpp.s
 
+llvm_hello.obj: llvm_hello.cpp.obj
+.PHONY : llvm_hello.obj
+
+# target to build an object file
+llvm_hello.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/llvm_hello.cpp.obj
+.PHONY : llvm_hello.cpp.obj
+
+llvm_hello.i: llvm_hello.cpp.i
+.PHONY : llvm_hello.i
+
+# target to preprocess a source file
+llvm_hello.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/llvm_hello.cpp.i
+.PHONY : llvm_hello.cpp.i
+
+llvm_hello.s: llvm_hello.cpp.s
+.PHONY : llvm_hello.s
+
+# target to generate assembly for a file
+llvm_hello.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/llvm_hello.cpp.s
+.PHONY : llvm_hello.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -245,9 +282,13 @@ help:
 	@echo ... intrinsics_gen
 	@echo ... omp_gen
 	@echo ... llvm_arthimatic
+	@echo ... llvm_hello
 	@echo ... llvm_arthimatic.obj
 	@echo ... llvm_arthimatic.i
 	@echo ... llvm_arthimatic.s
+	@echo ... llvm_hello.obj
+	@echo ... llvm_hello.i
+	@echo ... llvm_hello.s
 .PHONY : help
 
 

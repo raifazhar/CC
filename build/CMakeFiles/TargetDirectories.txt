@@ -1,0 +1,9 @@
+D:/Semester6/CC/build/CMakeFiles/intrinsics_gen.dir
+D:/Semester6/CC/build/CMakeFiles/omp_gen.dir
+D:/Semester6/CC/build/CMakeFiles/acc_gen.dir
+D:/Semester6/CC/build/CMakeFiles/ARMTargetParserTableGen.dir
+D:/Semester6/CC/build/CMakeFiles/AArch64TargetParserTableGen.dir
+D:/Semester6/CC/build/CMakeFiles/RISCVTargetParserTableGen.dir
+D:/Semester6/CC/build/CMakeFiles/llvm_arthimatic.dir
+D:/Semester6/CC/build/CMakeFiles/edit_cache.dir
+D:/Semester6/CC/build/CMakeFiles/rebuild_cache.dir

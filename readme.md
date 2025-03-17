@@ -1,9 +1,15 @@
 # LLVM IR Code Explanation
 
-## Overview
-This program is written in C++ and utilizes the LLVM framework to generate LLVM Intermediate Representation (IR) for a variadic arithmetic function. The generated function performs different arithmetic operations based on a opcode it supports addition, subtraction, multiplication, and division.
+## 📖 Table of Contents
+- [Overview](#overview)
+- [Key Components](#key-components)
+- [Compilation Steps](#-compilation-steps)
+- [Problems Encountered](#-problems-while-constructing-code)
 
-## Key Components
+## 📝 Overview
+This program is written in C++ and utilizes the LLVM framework to generate LLVM Intermediate Representation (IR) for a variadic arithmetic function. The generated function performs different arithmetic operations based on an opcode. It supports addition, subtraction, multiplication, and division.
+
+## 🔧 Key Components
 
 ### 1. **LLVM Context, Module, and IRBuilder**
 - The program initializes an `LLVMContext`, `Module`, and `IRBuilder`.
@@ -16,11 +22,12 @@ This program is written in C++ and utilizes the LLVM framework to generate LLVM 
 - Another global string, `Hello, World!\n`, is created for demonstration purposes.
 
 ### 3. **Defining Types**
-- Several LLVM types are defined:
-  - `Int32Ty` for 32-bit integers
-  - `FloatTy` for 32-bit floating-point numbers
-  - `DoubleTy` for 64-bit floating-point numbers
-  - `Int8PtrTy` for character pointers
+| LLVM Type | Description |
+|-----------|------------|
+| `Int32Ty` | 32-bit integer |
+| `FloatTy` | 32-bit floating-point number |
+| `DoubleTy` | 64-bit floating-point number |
+| `Int8PtrTy` | Character pointer |
 
 ### 4. **Arithmetic Function Definition**
 - The function `arthimatic(int count, int SwitchArg, ...)` is declared:
@@ -29,71 +36,65 @@ This program is written in C++ and utilizes the LLVM framework to generate LLVM 
   - The function accepts a variable number of arguments.
 
 ### 5. **Variadic Argument Handling**
-- `va_list` is allocated on the stack.
-- `llvm.va_start` is used to initialize the variadic argument list.
-- The function iterates through all arguments and performs operations accordingly.
+```cpp
+// Allocate va_list on stack
+Value *VAList = Builder.CreateAlloca(Int8PtrTy, nullptr, "va_list");
+
+// Initialize va_list
+Builder.CreateCall(VAStartFunc, VAList);
+```
 
 ### 6. **Arithmetic Operations (Switch Case)**
-- The switch statement decides which operation to perform:
-  - `0`: Addition (`FAdd`)
-  - `1`: Subtraction (`FSub`)
-  - `2`: Multiplication (`FMul`)
-  - `3`: Division (`FDiv`)
-- Special initialization cases exist for multiplication (result initialized to 1) and division (first argument used as the initial value).
-- The loop iterates through the arguments and applies the selected operation.
+```cpp
+SwitchInst *SI = Builder.CreateSwitch(SwitchArg, DefaultBB, 4);
+SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 0), AddBB); // case 0: Add
+SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 1), SubBB); // case 1: Subtract
+SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 2), MulBB); // case 2: Multiply
+SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 3), DivBB); // case 3: Divide
+```
 
 ### 7. **Function Completion**
 - `llvm.va_end` is called to clean up the variadic list.
 - The computed result is returned as a floating-point value.
 
 ### 8. **Main Function**
-- A `main` function is created:
-  - Calls `printf` to print "Hello, World!".
-  - Calls the `arthimatic` function with 4 arguments.
-  - Prints the result using `printf`.
-- Finally, the generated LLVM IR is printed.
-
-## Output
-The program generates LLVM IR, which can be compiled and executed with an LLVM-based backend to generate machine code.
-
-# LLVM Arithmetic Compiler Guide
-
-This guide walks you through compiling and running the **LLVM Arithmetic Compiler** using CMake and MinGW Makefiles.
+```cpp
+int main() {
+    printf("Hello, World!\n");
+    float result = arthimatic(4, 0, 5.0, 3.0, 7.0, 0.0);
+    printf("%f\n", result);
+    return 0;
+}
+```
 
 ---
 
-## 📌 Prerequisites
+# 🛠 Compilation Steps
 
-Ensure you have the following installed:
-- **CMake** (Version 3.31 or later)
-- **MinGW** (for `mingw32-make`)
-- **LLVM** (for `lli` to execute LLVM IR)
+### 📌 Prerequisites
+| Dependency | Version |
+|------------|---------|
+| **CMake**  | 3.31+   |
+| **MinGW**  | Any     |
+| **LLVM**   | Latest  |
 
----
+### 🚀 Steps
+```sh
+# Create a Build Directory
+mkdir build && cd build
 
-## 🛠 Compilation Steps
+# Generate the Makefile
+cmake .. -G "MinGW Makefiles"
 
-1. **Create a Build Directory** and navigate into it.
-2. **Generate the Makefile** using the following command:
-   ```sh
-   cmake .. -G "MinGW Makefiles"
-   ```
-   This will create the required `Makefile`.
-3. **Build the executable** using:
-   ```sh
-   mingw32-make
-   ```
-   This will generate `llvm_arthimatic.exe`.
-4. **Run the executable and generate LLVM IR**:
-   ```sh
-   ./llvm_arthimatic.exe > output.ll
-   ```
-   This will execute `llvm_arthimatic.exe` and store the LLVM IR in `output.ll`.
-5. **Run the generated LLVM IR using `lli`**:
-   ```sh
-   lli output.ll
-   ```
-   This will execute the IR and display the output.
+# Build the executable
+mingw32-make
+
+# Generate LLVM IR
+./llvm_arthimatic.exe > output.ll
+
+# Run LLVM IR
+lli output.ll
+```
 
 ---
 
@@ -104,13 +105,13 @@ Ensure you have the following installed:
 To access `va_start`, you need to use `llvm/va_start` by inserting and calling the function. Initially, I encountered an issue where `va_start` was not accessible. I first attempted to use:
 
 ```cpp
-Function *getDeclaration()
+Function *getDeclaration(); // Deprecated
 ```
 
 However, this function is now **deprecated**. Instead, I resolved the issue using:
 
 ```cpp
-getOrInsertFunction()
+getOrInsertFunction();
 ```
 
 ---
@@ -120,19 +121,14 @@ getOrInsertFunction()
 While implementing a `switch` statement to determine the arithmetic operation, I encountered an error when adding `case` statements. The problematic line:
 
 ```cpp
-SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 0), AddBB); // case 0: Add
-```
-
-I originally used:
-
-```cpp
 SwitchInst->addCase(ConstantInt::get(Int32Ty, 0), AddBB);
 ```
 
-This caused a **type compatibility error**. I resolved it by explicitly casting the type to `Int32Ty` using:
+This caused a **type compatibility error**. I resolved it by explicitly casting the type:
 
-```cpp
-ConstantInt::get(Type::getInt32Ty(Context), 0)
+```diff
+- SwitchInst->addCase(ConstantInt::get(Int32Ty, 0), AddBB);
++ SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 0), AddBB);
 ```
 
 ---
@@ -147,7 +143,9 @@ However, in the **division case**, I forgot to decrement the argument count. As 
 
 **Fix:** Adjusted the loop to correctly track argument count and avoid accessing past the last valid value.
 
+---
 
-## Conclusion
+## 🎯 Conclusion
 This program showcases how LLVM can be used to generate and manipulate LLVM IR dynamically, enabling custom compilation pipelines and optimization techniques.
 
+---

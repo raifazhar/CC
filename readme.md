@@ -92,8 +92,6 @@ mkdir build && cd build
 Run CMake to generate a Makefile for MinGW:
 
 ```sh
-Copy
-Edit
 cmake .. -G "MinGW Makefiles" 
 ```
 
@@ -101,8 +99,6 @@ cmake .. -G "MinGW Makefiles"
 Compile the source code using MinGW Make:
 
 ```sh
-Copy
-Edit
 mingw32-make
 This will generate llvm_arthimatic.exe.
 ```
@@ -112,8 +108,6 @@ This will generate llvm_arthimatic.exe.
 Run the executable and redirect its output to output.ll:
 
 ```sh
-Copy
-Edit
 ./llvm_arthimatic.exe > output.ll
 ```
 
@@ -121,8 +115,6 @@ Edit
 Run the generated LLVM IR using lli:
 
 ```sh
-Copy
-Edit
 lli output.ll
 ```
 

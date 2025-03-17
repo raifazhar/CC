@@ -79,22 +79,30 @@ int main() {
 | **LLVM**   | Latest  |
 
 ### 🚀 Steps
-```sh
-# Create a Build Directory
-mkdir build && cd build
-
-# Generate the Makefile
-cmake .. -G "MinGW Makefiles"
-
-# Build the executable
-mingw32-make
-
-# Generate LLVM IR
-./llvm_arthimatic.exe > output.ll
-
-# Run LLVM IR
-lli output.ll
-```
+1. **Create a Build Directory** and navigate into it.
+   ```sh
+   mkdir build && cd build
+   ```
+2. **Generate the Makefile** using the following command:
+   ```sh
+   cmake .. -G "MinGW Makefiles"
+   ```
+   This will create the required `Makefile`.
+3. **Build the executable** using:
+   ```sh
+   mingw32-make
+   ```
+   This will generate `llvm_arthimatic.exe`.
+4. **Run the executable and generate LLVM IR**:
+   ```sh
+   ./llvm_arthimatic.exe > output.ll
+   ```
+   This will execute `llvm_arthimatic.exe` and store the LLVM IR in `output.ll`.
+5. **Run the generated LLVM IR using `lli`**:
+   ```sh
+   lli output.ll
+   ```
+   This will execute the IR and display the output.
 
 ---
 

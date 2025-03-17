@@ -71,8 +71,6 @@ Ensure you have the following installed:
 
 ---
 
-# 🚀 Running the Compiler
-
 ## 🛠 Compilation Steps
 
 1. **Create a Build Directory** and navigate into it.

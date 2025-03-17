@@ -56,15 +56,6 @@ This program is written in C++ and utilizes the LLVM framework to generate LLVM 
 ## Output
 The program generates LLVM IR, which can be compiled and executed with an LLVM-based backend to generate machine code.
 
-## Dependencies
-- LLVM development libraries and headers.
-- C++ compiler with LLVM support.
-
-## Compilation and Execution
-1. Compile the program using `clang++` with LLVM flags.
-2. Run the compiled executable to generate and print LLVM IR.
-3. Use `lli` to execute the IR if required.
-
 # LLVM Arithmetic Compiler Guide
 
 This guide walks you through compiling and running the **LLVM Arithmetic Compiler** using CMake and MinGW Makefiles.
@@ -80,43 +71,84 @@ Ensure you have the following installed:
 
 ---
 
-## ⚙️ Compilation Steps
+# 🚀 Running the Compiler
 
-### **1️⃣ Create and Enter the Build Directory**
-First, create a `build` directory and navigate into it:
-```sh
-mkdir build && cd build
+## 🛠 Compilation Steps
+
+1. **Create a Build Directory** and navigate into it.
+2. **Generate the Makefile** using the following command:
+   ```sh
+   cmake .. -G "MinGW Makefiles"
+   ```
+   This will create the required `Makefile`.
+3. **Build the executable** using:
+   ```sh
+   mingw32-make
+   ```
+   This will generate `llvm_arthimatic.exe`.
+4. **Run the executable and generate LLVM IR**:
+   ```sh
+   ./llvm_arthimatic.exe > output.ll
+   ```
+   This will execute `llvm_arthimatic.exe` and store the LLVM IR in `output.ll`.
+5. **Run the generated LLVM IR using `lli`**:
+   ```sh
+   lli output.ll
+   ```
+   This will execute the IR and display the output.
+
+---
+
+# ⚠️ Problems While Constructing Code
+
+## ❌ Could Not Access `va_start`
+
+To access `va_start`, you need to use `llvm/va_start` by inserting and calling the function. Initially, I encountered an issue where `va_start` was not accessible. I first attempted to use:
+
+```cpp
+Function *getDeclaration()
 ```
 
-### **2️⃣ Generate the Makefile**
-Run CMake to generate a Makefile for MinGW:
+However, this function is now **deprecated**. Instead, I resolved the issue using:
 
-```sh
-cmake .. -G "MinGW Makefiles" 
+```cpp
+getOrInsertFunction()
 ```
 
-### **3️⃣ Build the Executable**
-Compile the source code using MinGW Make:
+---
 
-```sh
-mingw32-make
-This will generate llvm_arthimatic.exe.
+## 🔄 Creating `switch` Statements
+
+While implementing a `switch` statement to determine the arithmetic operation, I encountered an error when adding `case` statements. The problematic line:
+
+```cpp
+SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 0), AddBB); // case 0: Add
 ```
 
-## **🚀 Running the Compiler**
-### **4️⃣ Generate LLVM IR**
-Run the executable and redirect its output to output.ll:
+I originally used:
 
-```sh
-./llvm_arthimatic.exe > output.ll
+```cpp
+SwitchInst->addCase(ConstantInt::get(Int32Ty, 0), AddBB);
 ```
 
-## **5️⃣ Execute the LLVM IR**
-Run the generated LLVM IR using lli:
+This caused a **type compatibility error**. I resolved it by explicitly casting the type to `Int32Ty` using:
 
-```sh
-lli output.ll
+```cpp
+ConstantInt::get(Type::getInt32Ty(Context), 0)
 ```
+
+---
+
+## ➗ Division Issue
+
+For multiplication and division, I initially assigned a default value to `result`. Specifically:
+- **Multiplication (`*`)**: Set `result = 1`
+- **Division (`/`)**: Set `result` to the first argument of the variable list.
+
+However, in the **division case**, I forgot to decrement the argument count. As a result, the loop iterated beyond the available arguments, causing the code to access an invalid value, leading to **infinity (`inf`)** in the division operation.
+
+**Fix:** Adjusted the loop to correctly track argument count and avoid accessing past the last valid value.
+
 
 ## Conclusion
 This program showcases how LLVM can be used to generate and manipulate LLVM IR dynamically, enabling custom compilation pipelines and optimization techniques.

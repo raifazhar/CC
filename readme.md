@@ -1,7 +1,7 @@
 # LLVM IR Code Explanation
 
 ## Overview
-This program is written in C++ and utilizes the LLVM framework to generate LLVM Intermediate Representation (IR) for a variadic arithmetic function. The generated function performs different arithmetic operations based on a switch case, supporting addition, subtraction, multiplication, and division.
+This program is written in C++ and utilizes the LLVM framework to generate LLVM Intermediate Representation (IR) for a variadic arithmetic function. The generated function performs different arithmetic operations based on a opcode it supports addition, subtraction, multiplication, and division.
 
 ## Key Components
 
@@ -26,7 +26,7 @@ This program is written in C++ and utilizes the LLVM framework to generate LLVM 
 - The function `arthimatic(int count, int SwitchArg, ...)` is declared:
   - `count`: Number of variadic arguments.
   - `SwitchArg`: Determines the operation to be performed.
-  - The function accepts a variable number of floating-point arguments.
+  - The function accepts a variable number of arguments.
 
 ### 5. **Variadic Argument Handling**
 - `va_list` is allocated on the stack.
@@ -65,6 +65,59 @@ The program generates LLVM IR, which can be compiled and executed with an LLVM-b
 2. Run the compiled executable to generate and print LLVM IR.
 3. Use `lli` to execute the IR if required.
 
+# LLVM Arithmetic Compiler Guide
+
+This guide walks you through compiling and running the **LLVM Arithmetic Compiler** using CMake and MinGW Makefiles.
+
+---
+
+## 📌 Prerequisites
+
+Ensure you have the following installed:
+- **CMake** (Version 3.31 or later)
+- **MinGW** (for `mingw32-make`)
+- **LLVM** (for `lli` to execute LLVM IR)
+
+---
+
+## ⚙️ Compilation Steps
+
+### **1️⃣ Create and Enter the Build Directory**
+First, create a `build` directory and navigate into it:
+```sh
+mkdir build && cd build
+
+2️⃣ Generate the Makefile
+Run CMake to generate a Makefile for MinGW:
+
+sh
+Copy
+Edit
+cmake .. -G "MinGW Makefiles"
+3️⃣ Build the Executable
+Compile the source code using MinGW Make:
+
+sh
+Copy
+Edit
+mingw32-make
+This will generate llvm_arthimatic.exe.
+
+🚀 Running the Compiler
+4️⃣ Generate LLVM IR
+Run the executable and redirect its output to output.ll:
+
+sh
+Copy
+Edit
+./llvm_arthimatic.exe > output.ll
+5️⃣ Execute the LLVM IR
+Run the generated LLVM IR using lli:
+
+sh
+Copy
+Edit
+lli output.ll
 ## Conclusion
 This program showcases how LLVM can be used to generate and manipulate LLVM IR dynamically, enabling custom compilation pipelines and optimization techniques.
 

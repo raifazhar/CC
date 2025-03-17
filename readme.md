@@ -88,14 +88,14 @@ First, create a `build` directory and navigate into it:
 mkdir build && cd build
 ```
 
-2️⃣ Generate the Makefile
+### **2️⃣ Generate the Makefile**
 Run CMake to generate a Makefile for MinGW:
 
 ```sh
 cmake .. -G "MinGW Makefiles" 
 ```
 
-3️⃣ Build the Executable
+### **3️⃣ Build the Executable**
 Compile the source code using MinGW Make:
 
 ```sh
@@ -103,15 +103,15 @@ mingw32-make
 This will generate llvm_arthimatic.exe.
 ```
 
-🚀 Running the Compiler
-4️⃣ Generate LLVM IR
+## **🚀 Running the Compiler**
+### **4️⃣ Generate LLVM IR**
 Run the executable and redirect its output to output.ll:
 
 ```sh
 ./llvm_arthimatic.exe > output.ll
 ```
 
-5️⃣ Execute the LLVM IR
+## **5️⃣ Execute the LLVM IR**
 Run the generated LLVM IR using lli:
 
 ```sh

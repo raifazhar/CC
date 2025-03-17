@@ -16,10 +16,23 @@ This program is written in C++ and utilizes the LLVM framework to generate LLVM 
 - `LLVMContext` is a global context object required for creating LLVM structures.
 - `Module` represents a container for all LLVM IR objects (functions, global variables, etc.).
 - `IRBuilder` is used to generate LLVM instructions in an easy-to-use manner.
+```cpp
+  LLVMContext Context;
+  Module *TheModule = new Module("my_module", Context);
+  IRBuilder<> Builder(Context);
+```
 
 ### 2. **Global Variables and Format Strings**
 - A global string constant `%f\00` is defined for printing floating-point values.
 - Another global string, `Hello, World!\n`, is created for demonstration purposes.
+
+```cpp
+  Constant *FormatStrConst = ConstantDataArray::getString(Context, "%f\00", true);
+  GlobalVariable *FormatStr = new GlobalVariable(*TheModule, FormatStrConst->getType(), true, GlobalValue::PrivateLinkage, FormatStrConst, "format_str");
+
+  Constant *HelloWorldStr = ConstantDataArray::getString(Context, "Hello, World!\n", true);
+  GlobalVariable *HelloWorldGV = new GlobalVariable(*TheModule, HelloWorldStr->getType(), true GlobalValue::PrivateLinkage, HelloWorldStr, "hello_world");
+```
 
 ### 3. **Defining Types**
 | LLVM Type | Description |
@@ -34,28 +47,60 @@ This program is written in C++ and utilizes the LLVM framework to generate LLVM 
   - `count`: Number of variadic arguments.
   - `SwitchArg`: Determines the operation to be performed.
   - The function accepts a variable number of arguments.
+```cpp
+// Define function: float sum(int count, ...)
+std::vector<Type*> params = { Int32Ty,Int32Ty };
+FunctionType* arthimaticFuncType = FunctionType::get(FloatTy, params, true);
+Function *arthimaticFunc = Function::Create(arthimaticFuncType, Function::ExternalLinkage, "arthimatic", TheModule);
+
+// Name the first (fixed) argument
+Function::arg_iterator args = arthimaticFunc->arg_begin();
+Value *countArg = args++;
+countArg->setName("count");
+
+Value *SwitchArg = args++;
+SwitchArg->setName("SwitchArg");
+
+```
 
 ### 5. **Variadic Argument Handling**
 ```cpp
-// Allocate va_list on stack
+// Allocate va_list
 Value *VAList = Builder.CreateAlloca(Int8PtrTy, nullptr, "va_list");
 
-// Initialize va_list
-Builder.CreateCall(VAStartFunc, VAList);
+// Get llvm.va_start declaration
+FunctionType *VAStartType = FunctionType::get(Type::getVoidTy(Context), {Int8PtrTy}, false);
+FunctionCallee VAStart = TheModule->getOrInsertFunction("llvm.va_start", VAStartType);
+
+// Bitcast VAList to match expected i8* argument
+Value *VAListCasted = Builder.CreateBitCast(VAList, Int8PtrTy);
+Builder.CreateCall(VAStart, {VAListCasted});
+
 ```
 
 ### 6. **Arithmetic Operations (Switch Case)**
 ```cpp
-SwitchInst *SI = Builder.CreateSwitch(SwitchArg, DefaultBB, 4);
-SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 0), AddBB); // case 0: Add
-SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 1), SubBB); // case 1: Subtract
-SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 2), MulBB); // case 2: Multiply
-SI->addCase(ConstantInt::get(Type::getInt32Ty(Context), 3), DivBB); // case 3: Divide
+SwitchInst *SwitchInst = Builder.CreateSwitch(SwitchArg, EndBB, 4);
+
+// Create the switch instruction and set the default block to EndBB
+SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 0), AddBB); // case 0: Add
+
+SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 1), SubBB); // case 1: Subtract
+
+SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 2), MulBB); // case 2: Multiply
+
+SwitchInst->addCase(ConstantInt::get(Type::getInt32Ty(Context), 3), DivBB); // case 3: Divide
+
 ```
 
 ### 7. **Function Completion**
 - `llvm.va_end` is called to clean up the variadic list.
 - The computed result is returned as a floating-point value.
+
+```cpp
+FunctionCallee VAEnd = TheModule->getOrInsertFunction("llvm.va_end", VAStartType);
+Builder.CreateCall(VAEnd, {VAListCasted});
+```
 
 ### 8. **Main Function**
 ```cpp
@@ -64,6 +109,17 @@ int main() {
     float result = arthimatic(4, 0, 5.0, 3.0, 7.0, 0.0);
     printf("%f\n", result);
     return 0;
+}
+```
+
+```IR
+define i32 @main() {
+entry:
+  %0 = call i32 (ptr, ...) @printf(ptr @hello_world)
+  %result = call float (i32, i32, ...) @arthimatic(i32 4, i32 0, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
+  %result_double = fpext float %result to double
+  %1 = call i32 (ptr, ...) @printf(ptr @format_str, double %result_double)
+  ret i32 %1
 }
 ```
 

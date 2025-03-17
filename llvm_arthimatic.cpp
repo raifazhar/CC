@@ -16,15 +16,19 @@ IRBuilder<> Builder(Context);
 
 //******************************************************************************/
 
-//Define the format string
+Constant *FormatStrConst = ConstantDataArray::getString(Context, "%f\00", true);
 GlobalVariable *FormatStr = new GlobalVariable(
-*TheModule,
-ArrayType::get(Type::getInt8Ty(Context), 3),  // The array type for the format string
-true,  // isConstant
-GlobalValue::PrivateLinkage,  // Linkage type
-ConstantDataArray::getString(Context, "%f\00", true),  // The format string constant
-"format_str"  // Name of the global variable
+    *TheModule, FormatStrConst->getType(), true, GlobalValue::PrivateLinkage, FormatStrConst, "format_str"
 );
+
+//******************************************************************************/
+
+    // Define the "Hello, World!" format string globally
+Constant *HelloWorldStr = ConstantDataArray::getString(Context, "Hello, World!\n", true);
+GlobalVariable *HelloWorldGV = new GlobalVariable(
+    *TheModule, HelloWorldStr->getType(), true, GlobalValue::PrivateLinkage, HelloWorldStr, "hello_world"
+);
+
 
 //******************************************************************************/
 
@@ -70,7 +74,7 @@ int main() {
 
     // Allocate memory for the sum (initialize with 0)
     Value *result_ptr = Builder.CreateAlloca(FloatTy, nullptr, "result_ptr");
-    Builder.CreateStore(ConstantFP::get(FloatTy, 2.0), result_ptr);  // Store initial sum value
+    Builder.CreateStore(ConstantFP::get(FloatTy, 0.0), result_ptr);  // Store initial sum value
 
     // Allocate memory to store a mutable count
     Value *CountPtr = Builder.CreateAlloca(Int32Ty, nullptr, "count_ptr");
@@ -251,13 +255,8 @@ int main() {
     );
 
     FunctionCallee Printf = TheModule->getOrInsertFunction("printf", PrintfType);
+    //Function *Printf=Function::Create(PrintfType, Function::ExternalLinkage, "printf", TheModule);
 
-    //******************************************************************************/
-    // Define the "Hello, World!" format string globally
-    Constant *HelloWorldStr = ConstantDataArray::getString(Context, "Hello, World!\n", true);
-    GlobalVariable *HelloWorldGV = new GlobalVariable(
-        *TheModule, HelloWorldStr->getType(), true, GlobalValue::PrivateLinkage, HelloWorldStr, "hello_world"
-    );
 
     // Inside main, get the string pointer
     Value *HelloWorldPtr = Builder.CreateGEP(
@@ -271,15 +270,16 @@ int main() {
     //******************************************************************************/
 
     // Define the count, format, and arguments
-    Value *count = ConstantInt::get(Int32Ty, 3); // count = 3
-    Value *format = ConstantInt::get(Int32Ty, 3);
+    Value *count = ConstantInt::get(Int32Ty, 4); // count = 3
+    Value *format = ConstantInt::get(Int32Ty, 0);
     Value *arg1 = ConstantFP::get(DoubleTy, 3.0);
-    Value *arg2 = ConstantFP::get(DoubleTy, 2.0);
+    Value *arg2 = ConstantFP::get(DoubleTy, 4.0);
     Value *arg3 = ConstantFP::get(DoubleTy, 7.0);
+    Value *arg4 = ConstantFP::get(DoubleTy, 1.0);
 
     //******************************************************************************/
     // Call the arthimatic function
-    Value *resultPtr = Builder.CreateCall(arthimaticFunc, {count,format, arg1, arg2, arg3},"result");
+    Value *resultPtr = Builder.CreateCall(arthimaticFunc, {count,format, arg1, arg2, arg3, arg4},"result");
     Value *result_double = Builder.CreateFPExt(resultPtr, DoubleTy, "result_double");
 
     // Get the format string pointer

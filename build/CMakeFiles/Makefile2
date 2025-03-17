@@ -63,12 +63,10 @@ CMAKE_BINARY_DIR = D:\Semester6\CC\build
 
 # The main recursive "all" target.
 all: CMakeFiles/llvm_arthimatic.dir/all
-all: CMakeFiles/llvm_hello.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
 codegen: CMakeFiles/llvm_arthimatic.dir/codegen
-codegen: CMakeFiles/llvm_hello.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -83,7 +81,6 @@ clean: CMakeFiles/ARMTargetParserTableGen.dir/clean
 clean: CMakeFiles/AArch64TargetParserTableGen.dir/clean
 clean: CMakeFiles/RISCVTargetParserTableGen.dir/clean
 clean: CMakeFiles/llvm_arthimatic.dir/clean
-clean: CMakeFiles/llvm_hello.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -309,38 +306,6 @@ CMakeFiles/llvm_arthimatic.dir/codegen:
 CMakeFiles/llvm_arthimatic.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_arthimatic.dir\build.make CMakeFiles/llvm_arthimatic.dir/clean
 .PHONY : CMakeFiles/llvm_arthimatic.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/llvm_hello.dir
-
-# All Build rule for target.
-CMakeFiles/llvm_hello.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\Semester6\CC\build\CMakeFiles --progress-num=3,4 "Built target llvm_hello"
-.PHONY : CMakeFiles/llvm_hello.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/llvm_hello.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\Semester6\CC\build\CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/llvm_hello.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\Semester6\CC\build\CMakeFiles 0
-.PHONY : CMakeFiles/llvm_hello.dir/rule
-
-# Convenience name for target.
-llvm_hello: CMakeFiles/llvm_hello.dir/rule
-.PHONY : llvm_hello
-
-# codegen rule for target.
-CMakeFiles/llvm_hello.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\Semester6\CC\build\CMakeFiles --progress-num=3,4 "Finished codegen for target llvm_hello"
-.PHONY : CMakeFiles/llvm_hello.dir/codegen
-
-# clean rule for target.
-CMakeFiles/llvm_hello.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\llvm_hello.dir\build.make CMakeFiles/llvm_hello.dir/clean
-.PHONY : CMakeFiles/llvm_hello.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

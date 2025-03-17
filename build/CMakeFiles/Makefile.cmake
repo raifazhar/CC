@@ -87,5 +87,4 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/AArch64TargetParserTableGen.dir/DependInfo.cmake"
   "CMakeFiles/RISCVTargetParserTableGen.dir/DependInfo.cmake"
   "CMakeFiles/llvm_arthimatic.dir/DependInfo.cmake"
-  "CMakeFiles/llvm_hello.dir/DependInfo.cmake"
   )

@@ -9,7 +9,7 @@ entry:
   %va_list = alloca ptr, align 8
   call void @llvm.va_start(ptr %va_list)
   %result_ptr = alloca float, align 4
-  store float 2.000000e+00, ptr %result_ptr, align 4
+  store float 0.000000e+00, ptr %result_ptr, align 4
   %count_ptr = alloca i32, align 4
   store i32 %count, ptr %count_ptr, align 4
   %Switch_ptr = alloca ptr, align 8
@@ -88,7 +88,7 @@ declare void @llvm.va_end(ptr) #0
 define i32 @main() {
 entry:
   %0 = call i32 (ptr, ...) @printf(ptr @hello_world)
-  %result = call float (i32, i32, ...) @arthimatic(i32 3, i32 3, double 3.000000e+00, double 2.000000e+00, double 7.000000e+00)
+  %result = call float (i32, i32, ...) @arthimatic(i32 4, i32 0, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
   %result_double = fpext float %result to double
   %1 = call i32 (ptr, ...) @printf(ptr @format_str, double %result_double)
   ret i32 %1

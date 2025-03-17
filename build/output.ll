@@ -19,10 +19,10 @@ entry:
     i32 3, label %DivIntialize
   ]
 
-loop:                                             ; preds = %end1, %AddOrSubIntialize
-  %current_count2 = load i32, ptr %count_ptr, align 4
-  %next_arg3 = va_arg ptr %va_list, double
-  %truncated4 = fptrunc double %next_arg3 to float
+loop:                                             ; preds = %endcondition, %AddOrSubIntialize
+  %current_count1 = load i32, ptr %count_ptr, align 4
+  %next_arg2 = va_arg ptr %va_list, double
+  %truncated3 = fptrunc double %next_arg2 to float
   %current_result = load float, ptr %result_ptr, align 4
   switch i32 %SwitchArg, label %end [
     i32 0, label %Add
@@ -31,30 +31,30 @@ loop:                                             ; preds = %end1, %AddOrSubInti
     i32 3, label %Div
   ]
 
-end:                                              ; preds = %end1, %loop
+end:                                              ; preds = %endcondition, %loop
   call void @llvm.va_end(ptr %va_list)
   %final_sum = load float, ptr %result_ptr, align 4
   ret float %final_sum
 
 Add:                                              ; preds = %loop
-  %new_result = fadd float %current_result, %truncated4
+  %new_result = fadd float %current_result, %truncated3
   store float %new_result, ptr %result_ptr, align 4
-  br label %end1
+  br label %endcondition
 
 Sub:                                              ; preds = %loop
-  %new_result5 = fsub float %current_result, %truncated4
-  store float %new_result5, ptr %result_ptr, align 4
-  br label %end1
+  %new_result4 = fsub float %current_result, %truncated3
+  store float %new_result4, ptr %result_ptr, align 4
+  br label %endcondition
 
 Mul:                                              ; preds = %loop
-  %new_result6 = fmul float %current_result, %truncated4
-  store float %new_result6, ptr %result_ptr, align 4
-  br label %end1
+  %new_result5 = fmul float %current_result, %truncated3
+  store float %new_result5, ptr %result_ptr, align 4
+  br label %endcondition
 
 Div:                                              ; preds = %loop
-  %new_result7 = fdiv float %current_result, %truncated4
-  store float %new_result7, ptr %result_ptr, align 4
-  br label %end1
+  %new_result6 = fdiv float %current_result, %truncated3
+  store float %new_result6, ptr %result_ptr, align 4
+  br label %endcondition
 
 MulIntialize:                                     ; preds = %entry
   store float 1.000000e+00, ptr %result_ptr, align 4
@@ -72,8 +72,8 @@ DivIntialize:                                     ; preds = %entry
 AddOrSubIntialize:                                ; preds = %DivIntialize, %MulIntialize, %entry
   br label %loop
 
-end1:                                             ; preds = %Div, %Mul, %Sub, %Add
-  %1 = sub i32 %current_count2, 1
+endcondition:                                     ; preds = %Div, %Mul, %Sub, %Add
+  %1 = sub i32 %current_count1, 1
   store i32 %1, ptr %count_ptr, align 4
   %2 = icmp eq i32 %1, 0
   br i1 %2, label %end, label %loop

@@ -47,10 +47,10 @@ int main() {
 
     // Name the first (fixed) argument
     Function::arg_iterator args = arthimaticFunc->arg_begin();
-    Value *countArg = &*args++;
+    Value *countArg = args++;
     countArg->setName("count");
 
-    Value *SwitchArg = &*args++;
+    Value *SwitchArg = args++;
     SwitchArg->setName("SwitchArg");
 
     // Create function entry block
@@ -69,6 +69,7 @@ int main() {
     // Bitcast VAList to match expected i8* argument
     Value *VAListCasted = Builder.CreateBitCast(VAList, Int8PtrTy);
     Builder.CreateCall(VAStart, {VAListCasted});
+
     
     //******************************************************************************/
 
@@ -107,7 +108,7 @@ int main() {
     BasicBlock *AddOrSubIntialize = BasicBlock::Create(Context, "AddOrSubIntialize", arthimaticFunc);
 
     // Create basic blocks for the end condition and end
-    BasicBlock *EndConditonBB = BasicBlock::Create(Context, "end", arthimaticFunc);
+    BasicBlock *EndConditonBB = BasicBlock::Create(Context, "endcondition", arthimaticFunc);
 
     //******************************************************************************/
 
@@ -229,7 +230,6 @@ int main() {
     FunctionCallee VAEnd = TheModule->getOrInsertFunction("llvm.va_end", VAStartType);
     Builder.CreateCall(VAEnd, {VAListCasted});
 
-
     // Load final sum and return it
     Value *FinalSum = Builder.CreateLoad(FloatTy, result_ptr, "final_sum");
 
@@ -253,6 +253,7 @@ int main() {
         {Builder.getInt8Ty()->getPointerTo()},  // Only the format string
         true  // Variadic function
     );
+
 
     FunctionCallee Printf = TheModule->getOrInsertFunction("printf", PrintfType);
     //Function *Printf=Function::Create(PrintfType, Function::ExternalLinkage, "printf", TheModule);

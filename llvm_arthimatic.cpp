@@ -16,19 +16,45 @@ IRBuilder<> Builder(Context);
 
 //******************************************************************************/
 
-Constant *FormatStrConst = ConstantDataArray::getString(Context, "%f\00", true);
+// Define the "Hello, World!" format string globally
+Constant *HelloWorldStr = ConstantDataArray::getString(Context, "Hello, World!\n", true);
+GlobalVariable *HelloWorldGV = new GlobalVariable(
+    *TheModule, HelloWorldStr->getType(), true, GlobalValue::PrivateLinkage, HelloWorldStr, "hello_world"
+);
+
+//******************************************************************************/
+
+// Define the "Format String" globally
+Constant *FormatStrConst = ConstantDataArray::getString(Context, "%s %f\n\00", true);
 GlobalVariable *FormatStr = new GlobalVariable(
     *TheModule, FormatStrConst->getType(), true, GlobalValue::PrivateLinkage, FormatStrConst, "format_str"
 );
 
 //******************************************************************************/
 
-    // Define the "Hello, World!" format string globally
-Constant *HelloWorldStr = ConstantDataArray::getString(Context, "Hello, World!\n", true);
-GlobalVariable *HelloWorldGV = new GlobalVariable(
-    *TheModule, HelloWorldStr->getType(), true, GlobalValue::PrivateLinkage, HelloWorldStr, "hello_world"
+// Define the "Addition Result is" string as a global constant
+Constant *AdditionResultStrConst = ConstantDataArray::getString(Context, "Addition Result is", true);
+GlobalVariable *AdditionResultStr = new GlobalVariable(
+    *TheModule, AdditionResultStrConst->getType(), true, GlobalValue::PrivateLinkage, AdditionResultStrConst, "addition_result_str"
 );
 
+// Define the "Subtraction Result is" string as a global constant
+Constant *SubtractionResultStrConst = ConstantDataArray::getString(Context, "Subtraction Result is", true);
+GlobalVariable *SubtractionResultStr = new GlobalVariable(
+    *TheModule, SubtractionResultStrConst->getType(), true, GlobalValue::PrivateLinkage, SubtractionResultStrConst, "subtraction_result_str"
+);
+
+// Define the "Multiplication Result is" string as a global constant
+Constant *MultiplicationResultStrConst = ConstantDataArray::getString(Context, "Multiplication Result is", true);
+GlobalVariable *MultiplicationResultStr = new GlobalVariable(
+    *TheModule, MultiplicationResultStrConst->getType(), true, GlobalValue::PrivateLinkage, MultiplicationResultStrConst, "multiplication_result_str"
+);
+
+// Define the "Division Result is" string as a global constant
+Constant *DivisionResultStrConst = ConstantDataArray::getString(Context, "Division Result is", true);
+GlobalVariable *DivisionResultStr = new GlobalVariable(
+    *TheModule, DivisionResultStrConst->getType(), true, GlobalValue::PrivateLinkage, DivisionResultStrConst, "division_result_str"
+);
 
 //******************************************************************************/
 
@@ -37,6 +63,29 @@ Type *Int32Ty = Builder.getInt32Ty();
 Type *FloatTy = Builder.getFloatTy();
 Type *DoubleTy = Builder.getDoubleTy();
 Type *Int8PtrTy = Builder.getInt8Ty()->getPointerTo();
+
+//******************************************************************************/
+
+// Get the hello string pointer
+Value *HelloWorldPtr = Builder.CreateGEP(HelloWorldGV->getValueType(), HelloWorldGV,{ConstantInt::get(Int32Ty, 0), ConstantInt::get(Int32Ty, 0)});
+
+// Get the format string pointer    // Get the format string pointer
+Value *format_str_ptr = Builder.CreateGEP(FormatStrConst->getType(), FormatStr, {ConstantInt::get(Type::getInt32Ty(Context), 0), ConstantInt::get(Type::getInt32Ty(Context), 0)});
+
+// Get a pointer to "Addition Result is"
+Value *addition_str_ptr = Builder.CreateGEP(AdditionResultStrConst->getType(), AdditionResultStr, {ConstantInt::get(Type::getInt32Ty(Context), 0), ConstantInt::get(Type::getInt32Ty(Context), 0)});
+
+// Get a pointer to "Subtraction Result is"
+Value *subtraction_str_ptr = Builder.CreateGEP(SubtractionResultStrConst->getType(), SubtractionResultStr, {ConstantInt::get(Type::getInt32Ty(Context), 0), ConstantInt::get(Type::getInt32Ty(Context), 0)});
+
+// Get a pointer to "Multiplication Result is"
+Value *multiplication_str_ptr = Builder.CreateGEP(MultiplicationResultStrConst->getType(), MultiplicationResultStr, {ConstantInt::get(Type::getInt32Ty(Context), 0), ConstantInt::get(Type::getInt32Ty(Context), 0)});
+
+// Get a pointer to "Division Result is"
+Value *division_str_ptr = Builder.CreateGEP(DivisionResultStrConst->getType(), DivisionResultStr, {ConstantInt::get(Type::getInt32Ty(Context), 0), ConstantInt::get(Type::getInt32Ty(Context), 0)});
+
+
+
 
 int main() {
 
@@ -258,43 +307,85 @@ int main() {
     FunctionCallee Printf = TheModule->getOrInsertFunction("printf", PrintfType);
     //Function *Printf=Function::Create(PrintfType, Function::ExternalLinkage, "printf", TheModule);
 
-
-    // Inside main, get the string pointer
-    Value *HelloWorldPtr = Builder.CreateGEP(
-        HelloWorldGV->getValueType(), HelloWorldGV, 
-        {ConstantInt::get(Int32Ty, 0), ConstantInt::get(Int32Ty, 0)}
-    );
-
+    //******************************************************************************/
     // Call printf with string arguments
     Builder.CreateCall(Printf, {HelloWorldPtr});
 
     //******************************************************************************/
 
     // Define the count, format, and arguments
-    Value *count = ConstantInt::get(Int32Ty, 4); // count = 3
-    Value *format = ConstantInt::get(Int32Ty, 0);
-    Value *arg1 = ConstantFP::get(DoubleTy, 3.0);
-    Value *arg2 = ConstantFP::get(DoubleTy, 4.0);
-    Value *arg3 = ConstantFP::get(DoubleTy, 7.0);
-    Value *arg4 = ConstantFP::get(DoubleTy, 1.0);
+    Value *count_Addition = ConstantInt::get(Int32Ty, 4); // count = 3
+    Value *format_Addition = ConstantInt::get(Int32Ty, 0);
+    Value *arg1_Addition = ConstantFP::get(DoubleTy, 3.0);
+    Value *arg2_Addition = ConstantFP::get(DoubleTy, 4.0);
+    Value *arg3_Addition = ConstantFP::get(DoubleTy, 7.0);
+    Value *arg4_Addition = ConstantFP::get(DoubleTy, 1.0);
 
-    //******************************************************************************/
     // Call the arthimatic function
-    Value *resultPtr = Builder.CreateCall(arthimaticFunc, {count,format, arg1, arg2, arg3, arg4},"result");
-    Value *result_double = Builder.CreateFPExt(resultPtr, DoubleTy, "result_double");
+    Value *AdditionResult_Ptr = Builder.CreateCall(arthimaticFunc, {count_Addition,format_Addition, arg1_Addition, arg2_Addition, arg3_Addition, arg4_Addition},"Addition_result_ptr");
+    Value *AdditionResult_Double = Builder.CreateFPExt(AdditionResult_Ptr, DoubleTy, "Addition_result_double");
 
-    // Get the format string pointer
-    Value *format_str_ptr = Builder.CreateGEP(FormatStr->getValueType(), FormatStr, {ConstantInt::get(Int32Ty, 0), ConstantInt::get(Int32Ty, 0)});
-
-    // Call printf with string arguments
-    Value *printf_call = Builder.CreateCall(Printf, {format_str_ptr, result_double});
-
-    // Return the printf call
-    Builder.CreateRet(printf_call);
+    // Call printf with correct arguments
+    Value *printf_Addition_call = Builder.CreateCall(Printf, {format_str_ptr, addition_str_ptr, AdditionResult_Double});
 
     //******************************************************************************/
+
+    // Define the count, format, and arguments
+    Value *count_Subtraction = ConstantInt::get(Int32Ty, 4); // count = 3
+    Value *format_Subtraction = ConstantInt::get(Int32Ty, 1);
+    Value *arg1_Subtraction = ConstantFP::get(DoubleTy, 3.0);
+    Value *arg2_Subtraction = ConstantFP::get(DoubleTy, 4.0);
+    Value *arg3_Subtraction = ConstantFP::get(DoubleTy, 7.0);
+    Value *arg4_Subtraction = ConstantFP::get(DoubleTy, 1.0);
+
+    // Call the arthimatic function
+    Value *SubtractionResult_Ptr = Builder.CreateCall(arthimaticFunc, {count_Subtraction,format_Subtraction, arg1_Subtraction, arg2_Subtraction, arg3_Subtraction, arg4_Subtraction},"Subtraction_result_ptr");
+    Value *SubtractionResult_Double = Builder.CreateFPExt(SubtractionResult_Ptr, DoubleTy, "Subtraction_result_double");
+
+    // Call printf with correct arguments
+    Builder.CreateCall(Printf, {format_str_ptr, subtraction_str_ptr, SubtractionResult_Double});
+
+    //******************************************************************************/
+
+    // Define the count, format, and arguments
+    Value *count_Multiplication = ConstantInt::get(Int32Ty, 4); // count = 3
+    Value *format_Multiplication = ConstantInt::get(Int32Ty, 2);
+    Value *arg1_Multiplication = ConstantFP::get(DoubleTy, 3.0);
+    Value *arg2_Multiplication = ConstantFP::get(DoubleTy, 4.0);
+    Value *arg3_Multiplication = ConstantFP::get(DoubleTy, 7.0);
+    Value *arg4_Multiplication = ConstantFP::get(DoubleTy, 1.0);
+
+    // Call the arthimatic function
+    Value *MultiplicationResult_Ptr = Builder.CreateCall(arthimaticFunc, {count_Multiplication,format_Multiplication, arg1_Multiplication, arg2_Multiplication, arg3_Multiplication, arg4_Multiplication},"Multiplication_result_ptr");
+    Value *MultiplicationResult_Double = Builder.CreateFPExt(MultiplicationResult_Ptr, DoubleTy, "Multiplication_result_double");
+
+    // Call printf with correct arguments
+    Builder.CreateCall(Printf, {format_str_ptr, multiplication_str_ptr, MultiplicationResult_Double});
+
+    //******************************************************************************/
+
+    // Define the count, format, and arguments
+    Value *count_Division = ConstantInt::get(Int32Ty, 4); // count = 3
+    Value *format_Division = ConstantInt::get(Int32Ty, 3);
+    Value *arg1_Division = ConstantFP::get(DoubleTy, 3.0);
+    Value *arg2_Division = ConstantFP::get(DoubleTy, 4.0);
+    Value *arg3_Division = ConstantFP::get(DoubleTy, 7.0);
+    Value *arg4_Division = ConstantFP::get(DoubleTy, 1.0);
+
+    // Call the arthimatic function
+    Value *DivisionResult_Ptr = Builder.CreateCall(arthimaticFunc, {count_Division,format_Division, arg1_Division, arg2_Division, arg3_Division, arg4_Division},"Division_result_ptr");
+    Value *DivisionResult_Double = Builder.CreateFPExt(DivisionResult_Ptr, DoubleTy, "Division_result_double");
+
+    // Call printf with correct arguments
+    Builder.CreateCall(Printf, {format_str_ptr, division_str_ptr, DivisionResult_Double});
+
+    //******************************************************************************/
+
+    // Return 0
+    Builder.CreateRet(ConstantInt::get(Int32Ty, 0));
+
     // Print the IR
-    TheModule->print(errs(), nullptr);
+    TheModule->print(outs(), nullptr);
 
 
     delete TheModule;

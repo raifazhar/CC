@@ -1,0 +1,3 @@
+C:\msys64\mingw64\bin\cmake.exe -E rm -f CMakeFiles\abdullah.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\abdullah.dir/objects.a @CMakeFiles\abdullah.dir\objects1.rsp
+C:\msys64\mingw64\bin\c++.exe -g -Wl,--whole-archive CMakeFiles\abdullah.dir/objects.a -Wl,--no-whole-archive -o abdullah.exe -Wl,--out-implib,libabdullah.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\abdullah.dir\linkLibs.rsp

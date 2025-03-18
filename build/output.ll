@@ -1,8 +1,12 @@
 ; ModuleID = 'my_module'
 source_filename = "my_module"
 
-@format_str = private constant [3 x i8] c"%f\00"
 @hello_world = private constant [15 x i8] c"Hello, World!\0A\00"
+@format_str = private constant [7 x i8] c"%s %f\0A\00"
+@addition_result_str = private constant [19 x i8] c"Addition Result is\00"
+@subtraction_result_str = private constant [22 x i8] c"Subtraction Result is\00"
+@multiplication_result_str = private constant [25 x i8] c"Multiplication Result is\00"
+@division_result_str = private constant [19 x i8] c"Division Result is\00"
 
 define float @arthimatic(i32 %count, i32 %SwitchArg, ...) {
 entry:
@@ -88,10 +92,19 @@ declare void @llvm.va_end(ptr) #0
 define i32 @main() {
 entry:
   %0 = call i32 (ptr, ...) @printf(ptr @hello_world)
-  %result = call float (i32, i32, ...) @arthimatic(i32 4, i32 0, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
-  %result_double = fpext float %result to double
-  %1 = call i32 (ptr, ...) @printf(ptr @format_str, double %result_double)
-  ret i32 %1
+  %Addition_result_ptr = call float (i32, i32, ...) @arthimatic(i32 4, i32 0, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
+  %Addition_result_double = fpext float %Addition_result_ptr to double
+  %1 = call i32 (ptr, ...) @printf(ptr @format_str, ptr @addition_result_str, double %Addition_result_double)
+  %Subtraction_result_ptr = call float (i32, i32, ...) @arthimatic(i32 4, i32 1, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
+  %Subtraction_result_double = fpext float %Subtraction_result_ptr to double
+  %2 = call i32 (ptr, ...) @printf(ptr @format_str, ptr @subtraction_result_str, double %Subtraction_result_double)
+  %Multiplication_result_ptr = call float (i32, i32, ...) @arthimatic(i32 4, i32 2, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
+  %Multiplication_result_double = fpext float %Multiplication_result_ptr to double
+  %3 = call i32 (ptr, ...) @printf(ptr @format_str, ptr @multiplication_result_str, double %Multiplication_result_double)
+  %Division_result_ptr = call float (i32, i32, ...) @arthimatic(i32 4, i32 3, double 3.000000e+00, double 4.000000e+00, double 7.000000e+00, double 1.000000e+00)
+  %Division_result_double = fpext float %Division_result_ptr to double
+  %4 = call i32 (ptr, ...) @printf(ptr @format_str, ptr @division_result_str, double %Division_result_double)
+  ret i32 0
 }
 
 declare i32 @printf(ptr, ...)

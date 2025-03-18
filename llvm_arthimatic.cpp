@@ -294,7 +294,7 @@ int main() {
 
     //******************************************************************************/
     // Print the IR
-    TheModule->print(outs(), nullptr);
+    TheModule->print(errs(), nullptr);
 
 
     delete TheModule;
